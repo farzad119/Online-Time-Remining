@@ -34,16 +34,16 @@ import java.util.concurrent.TimeUnit;
 
 public class ReminingTime extends ActionBarActivity {
 
-    Boolean isActive=false;
+    Boolean isActive = false;
     Long lastResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_remining_time);
-        Button btnview=(Button)findViewById(R.id.btnview);
-        final EditText etid=(EditText)findViewById(R.id.etid);
-        final TextView txtreminingtime=(TextView)findViewById(R.id.txtreminingtime);
+        Button btnview = (Button) findViewById(R.id.btnview);
+        final EditText etid = (EditText) findViewById(R.id.etid);
+        final TextView txtreminingtime = (TextView) findViewById(R.id.txtreminingtime);
 
         btnview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,12 +80,12 @@ public class ReminingTime extends ActionBarActivity {
             try {
                 response = httpclient.execute(new HttpGet(uri[0]));
                 StatusLine statusLine = response.getStatusLine();
-                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     response.getEntity().writeTo(out);
                     responseString = out.toString();
                     out.close();
-                } else{
+                } else {
                     //Closes the connection.
                     response.getEntity().getContent().close();
                     throw new IOException(statusLine.getReasonPhrase());
@@ -103,83 +103,13 @@ public class ReminingTime extends ActionBarActivity {
             super.onPostExecute(result);
             //Do anything with response..
             Log.w("Response", result + "");
-
-
-            try {
-                JSONObject jObj = new JSONObject(result);
-
-                Toast.makeText(ReminingTime.this, "End time : "+jObj.getString("endtime") + "\n now :"+jObj.getString("now"), Toast.LENGTH_LONG).show();
-
-                //joda kardan zaman va tarikh
-                //example current : 2016-1-30 19:20:25
-                //example endtime : 2016-1-30a09:20:00
-                String[] CurrentDateArrayHelper = jObj.getString("now").split(" ");
-                String[] FinalDateArrayHelper = jObj.getString("endtime").split(" ");
-
-                //joda kardan adaad tarikh
-                String[] CurrentDate = CurrentDateArrayHelper[0].split("-");
-                String[] FinalDate = FinalDateArrayHelper[0].split("-");
-
-                //joda karda adaad zaman
-                String[] CurrentTime = CurrentDateArrayHelper[1].split(":");
-                String[] FinalTime = FinalDateArrayHelper[1].split(":");
-
-
-                //tabdil tarikh be calendar
-                Calendar calDatenow = Calendar.getInstance();
-                calDatenow.set(Integer.valueOf(CurrentDate[0]), Integer.valueOf(CurrentDate[1]), Integer.valueOf(CurrentDate[2]));
-
-                Calendar calDatenowFinal = Calendar.getInstance();
-                calDatenowFinal.set(Integer.valueOf(FinalDate[0]), Integer.valueOf(FinalDate[1]), Integer.valueOf(FinalDate[2]));
-
-
-                //tabdil zaman be calendar
-                Calendar calTimeenow = Calendar.getInstance();
-                calTimeenow.set(Integer.valueOf(CurrentTime[0]), Integer.valueOf(CurrentTime[1]), Integer.valueOf(CurrentTime[2]));
-
-                Calendar calTimeFinal = Calendar.getInstance();
-                calTimeFinal.set(Integer.valueOf(FinalTime[0]), Integer.valueOf(FinalTime[1]), Integer.valueOf(FinalTime[2]));
-
-
-                //set kardan tarikh va zaman dar yek calendar
-                Calendar thatDay = Calendar.getInstance();
-                thatDay.set(Calendar.SECOND,Integer.valueOf(FinalTime[2]));
-                thatDay.set(Calendar.MINUTE,Integer.valueOf(FinalTime[1]));
-                thatDay.set(Calendar.HOUR,Integer.valueOf(FinalTime[0]));
-                thatDay.set(Calendar.DAY_OF_MONTH,Integer.valueOf(FinalDate[2]));
-                thatDay.set(Calendar.MONTH,Integer.valueOf(FinalDate[1])-1); // 0-11 so 1 less
-                thatDay.set(Calendar.YEAR, Integer.valueOf(FinalDate[0]));
-
-                Log.wtf("SECOND", Integer.valueOf(FinalTime[2]) + "");
-                Log.wtf("MINUTE", Integer.valueOf(FinalTime[1]) + "");
-                Log.wtf("HOUR", Integer.valueOf(FinalTime[0]) + "");
-                Log.wtf("DAY_OF_MONTH", Integer.valueOf(FinalDate[2]) + "");
-                Log.wtf("MONTH", Integer.valueOf(FinalDate[1]) + "");
-                Log.wtf("YEAR", Integer.valueOf(FinalDate[0]) + "");
-
-                Calendar today = Calendar.getInstance();
-                today.set(Calendar.SECOND, Integer.valueOf(CurrentTime[2]));
-                today.set(Calendar.MINUTE, Integer.valueOf(CurrentTime[1]));
-                today.set(Calendar.HOUR, Integer.valueOf(CurrentTime[0]));
-                today.set(Calendar.DAY_OF_MONTH, Integer.valueOf(CurrentDate[2]));
-                today.set(Calendar.MONTH, Integer.valueOf(CurrentDate[1]) - 1); // 0-11 so 1 less
-                today.set(Calendar.YEAR, Integer.valueOf(CurrentDate[0]));
-
-                long diff = thatDay.getTimeInMillis() - today.getTimeInMillis();
-                Log.wtf("diff hour",getDurationBreakdown(diff));
-                lastResult=diff;
-                isActive=true;
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            decodeJson(result);
         }
     }
 
     //class tabdil millisanie be roz va daghighe
-    public static String getDurationBreakdown(long millis)
-    {
-        if(millis < 0) {
+    private static String getDurationBreakdown(long millis) {
+        if (millis < 0) {
             Log.wtf("diff", "Duration must be greater than zero!");
         }
         long days = TimeUnit.MILLISECONDS.toDays(millis);
@@ -191,14 +121,83 @@ public class ReminingTime extends ActionBarActivity {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
 
         StringBuilder sb = new StringBuilder(64);
-        sb.append(hours+days*24);
+        sb.append(hours + days * 24);
         sb.append(" Hours ");
-        sb.append(minutes+hours);
+        sb.append(minutes + hours);
         sb.append(" Minutes ");
         sb.append(seconds);
         sb.append(" Seconds");
 
-        return(sb.toString());
+        return (sb.toString());
+    }
+
+    private void decodeJson(String json) {
+
+        try {
+            JSONObject jObj = new JSONObject(json);
+
+            Toast.makeText(ReminingTime.this, "End time : " + jObj.getString("endtime") + "\n now :" + jObj.getString("now"), Toast.LENGTH_LONG).show();
+
+            //joda kardan zaman va tarikh
+            //example current : 2016-1-30 19:20:25
+            //example endtime : 2016-1-30 09:20:00
+            String[] CurrentDateArrayHelper = jObj.getString("now").split(" ");
+            String[] FinalDateArrayHelper = jObj.getString("endtime").split(" ");
+
+            //joda kardan adaad tarikh
+            String[] CurrentDate = CurrentDateArrayHelper[0].split("-");
+            String[] FinalDate = FinalDateArrayHelper[0].split("-");
+
+            //joda karda adaad zaman
+            String[] CurrentTime = CurrentDateArrayHelper[1].split(":");
+            String[] FinalTime = FinalDateArrayHelper[1].split(":");
+
+            //tabdil tarikh be calendar
+            Calendar calDatenow = Calendar.getInstance();
+            calDatenow.set(Integer.valueOf(CurrentDate[0]), Integer.valueOf(CurrentDate[1]), Integer.valueOf(CurrentDate[2]));
+
+            Calendar calDatenowFinal = Calendar.getInstance();
+            calDatenowFinal.set(Integer.valueOf(FinalDate[0]), Integer.valueOf(FinalDate[1]), Integer.valueOf(FinalDate[2]));
+
+            //tabdil zaman be calendar
+            Calendar calTimeenow = Calendar.getInstance();
+            calTimeenow.set(Integer.valueOf(CurrentTime[0]), Integer.valueOf(CurrentTime[1]), Integer.valueOf(CurrentTime[2]));
+
+            Calendar calTimeFinal = Calendar.getInstance();
+            calTimeFinal.set(Integer.valueOf(FinalTime[0]), Integer.valueOf(FinalTime[1]), Integer.valueOf(FinalTime[2]));
+
+            //set kardan tarikh va zaman dar yek calendar
+            Calendar thatDay = Calendar.getInstance();
+            thatDay.set(Calendar.SECOND, Integer.valueOf(FinalTime[2]));
+            thatDay.set(Calendar.MINUTE, Integer.valueOf(FinalTime[1]));
+            thatDay.set(Calendar.HOUR, Integer.valueOf(FinalTime[0]));
+            thatDay.set(Calendar.DAY_OF_MONTH, Integer.valueOf(FinalDate[2]));
+            thatDay.set(Calendar.MONTH, Integer.valueOf(FinalDate[1]) - 1); // 0-11 so 1 less
+            thatDay.set(Calendar.YEAR, Integer.valueOf(FinalDate[0]));
+
+            Log.wtf("SECOND", Integer.valueOf(FinalTime[2]) + "");
+            Log.wtf("MINUTE", Integer.valueOf(FinalTime[1]) + "");
+            Log.wtf("HOUR", Integer.valueOf(FinalTime[0]) + "");
+            Log.wtf("DAY_OF_MONTH", Integer.valueOf(FinalDate[2]) + "");
+            Log.wtf("MONTH", Integer.valueOf(FinalDate[1]) + "");
+            Log.wtf("YEAR", Integer.valueOf(FinalDate[0]) + "");
+
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.SECOND, Integer.valueOf(CurrentTime[2]));
+            today.set(Calendar.MINUTE, Integer.valueOf(CurrentTime[1]));
+            today.set(Calendar.HOUR, Integer.valueOf(CurrentTime[0]));
+            today.set(Calendar.DAY_OF_MONTH, Integer.valueOf(CurrentDate[2]));
+            today.set(Calendar.MONTH, Integer.valueOf(CurrentDate[1]) - 1); // 0-11 so 1 less
+            today.set(Calendar.YEAR, Integer.valueOf(CurrentDate[0]));
+
+            long diff = thatDay.getTimeInMillis() - today.getTimeInMillis();
+            Log.wtf("diff hour", getDurationBreakdown(diff));
+            lastResult = diff;
+            isActive = true;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }
