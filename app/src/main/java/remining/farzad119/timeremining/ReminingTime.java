@@ -54,8 +54,7 @@ public class ReminingTime extends ActionBarActivity {
             }
         });
 
-
-        //timer
+        //timer update textview namayesh khorooji
         final Handler handler = new Handler();
         final Runnable r = new Runnable() {
             public void run() {

@@ -21,7 +21,7 @@
         <activity
             android:name=".ReminingTime"
             android:label="@string/title_activity_remining_time"></activity>
-        <activity android:name=".isexpired"></activity>
+        <activity android:name=".IsExpired"></activity>
     </application>
 
 </manifest>

@@ -1,7 +1,6 @@
 package remining.farzad119.timeremining;
 
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +25,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-public class isexpired extends AppCompatActivity {
+public class IsExpired extends AppCompatActivity {
 
     Button btnview;
     EditText etid;
@@ -45,7 +44,7 @@ public class isexpired extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     //ferestadan id karbar be samt server
-                    String url = "http://farzad119.ir/Files/timeremining/signupexpired/isexpired.php?id=" + etid.getText().toString();
+                    String url = "http://farzad119.ir/Files/timeremining/signupexpired/IsExpired.php?id=" + etid.getText().toString();
 
                     //ejraye class daryaft etelaat
                     new RequestTask().execute(url);
@@ -92,7 +91,7 @@ public class isexpired extends AppCompatActivity {
                 try {
                     JSONObject jObj = new JSONObject(result);
 
-                    Toast.makeText(isexpired.this, "End time : " + jObj.getString("expireddate") + "\n now :" + jObj.getString("now"), Toast.LENGTH_LONG).show();
+                    Toast.makeText(IsExpired.this, "End time : " + jObj.getString("expireddate") + "\n now :" + jObj.getString("now"), Toast.LENGTH_LONG).show();
 
                     //joda kardan adaad tarikh
                     String[] CurrentDate = jObj.getString("now").split("-");
