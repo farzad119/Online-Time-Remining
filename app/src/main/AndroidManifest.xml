@@ -19,9 +19,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ReminingTime"
+            android:name=".ReminingTimeActivity"
             android:label="@string/title_activity_remining_time"></activity>
-        <activity android:name=".IsExpired"></activity>
+        <activity android:name=".IsExpiredActivity"></activity>
     </application>
 
 </manifest>

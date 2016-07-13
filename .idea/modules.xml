@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Timeremining.iml" filepath="$PROJECT_DIR$/Timeremining.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Online-Time-Remining.iml" filepath="$PROJECT_DIR$/Online-Time-Remining.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
